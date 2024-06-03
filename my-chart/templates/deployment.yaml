@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: my-chart
+
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: my-chart
+
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: Role
+    metadata:
+      name: my-chart
+    rules:
+      - apiGroups: [""]
+        resources: ["endpoints", "pods", "services"]
+        verbs: ["*"]
+
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: my-chart
+    subjects:
+      - kind: ServiceAccount
+        name: my-chart
+    roleRef:
+      kind: Role
+      name: my-chart
+      apiGroup: rbac.authorization.k8s.io
+
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: my-chart
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: my-chart
+      template:
+        metadata:
+          labels:
+            app: my-chart
+        spec:
+          containers:
+            - name: my-chart
+              image: my-chart-image
+              ports:
+                - containerPort: 8080
+              env:
+                - name: APP1_REPLICAS
+                  value: {{ .Values.app1.replicas }}
+                - name: APP2_REPLICAS
+                  value: {{ .Values.app2.replicas }}
+
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: my-chart
+    spec:
+      selector:
+        app: my-chart
+      ports:
+        - port: 8080
+          targetPort: 8080
+
+  - apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: app1-ingress
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /$1
+    spec:
+      rules:
+        - host: app1.example.com
+          http:
+            paths:
+              - path: /app1(/|$)(.*)
+                pathType: Prefix
+                backend:
+                  service:
+                    name: app1
+                    port:
+                      number: 80
+
+  - apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: app2-ingress
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /$1
+    spec:
+      rules:
+        - host: app2.example.com
+          http:
+            paths:
+              - path: /app2(/|$)(.*)
+                pathType: Prefix
+                backend:
+                  service:
+                    name: app2
+                    port:
+                      number: 80

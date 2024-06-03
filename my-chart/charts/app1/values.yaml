@@ -1,2 +1,5 @@
 app1:
+  replicas: 3
   image: nginx:latest
+  nodeSelector:
+    frontend: "true"
