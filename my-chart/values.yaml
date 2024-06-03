@@ -1,0 +1,9 @@
+app1:
+  replicas: 3
+  nodeSelector:
+    kubernetes.io/hostname: node-1
+
+app2:
+  replicas: 2
+  nodeSelector:
+    kubernetes.io/hostname: node-2
