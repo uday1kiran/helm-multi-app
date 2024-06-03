@@ -48,3 +48,4 @@ Ref:
 https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/
 https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download
 https://github.com/helm/helm/releases
+https://www.youtube.com/watch?v=4BNDEnwmEYM
